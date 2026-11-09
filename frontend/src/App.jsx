@@ -15,7 +15,29 @@ const TIERS = [
   { key: 'db', label: 'Postgres', sub: 'volume' },
 ];
 
+function About() {
+  return (
+    <section className="card about">
+      <h2>About Launchpad</h2>
+      <p>A three-tier demo app for the DevOps Horizon Docker Compose assignment.</p>
+      <ul>
+        <li><strong>React</strong> frontend, built by Vite and served by nginx</li>
+        <li><strong>Express</strong> API on an isolated backend network</li>
+        <li><strong>PostgreSQL</strong> with a named volume for persistent data</li>
+      </ul>
+      <p>The whole stack starts with one command: <code>docker compose up -d --build</code></p>
+    </section>
+  );
+}
+
 export default function App() {
+  const [page, setPage] = useState(window.location.hash);
+  useEffect(() => {
+    const onHash = () => setPage(window.location.hash);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
   const [missions, setMissions] = useState([]);
   const [health, setHealth] = useState(null);
   const [title, setTitle] = useState('');
@@ -50,7 +72,13 @@ export default function App() {
         <p className="eyebrow">three-tier · docker compose</p>
         <h1>Launch<span>pad</span></h1>
         <p className="tagline">Mission control for your next deploy.</p>
+        <nav className="nav">
+          <a href="#" aria-current={page !== '#about' ? 'page' : undefined}>Missions</a>
+          <a href="#about" aria-current={page === '#about' ? 'page' : undefined}>About</a>
+        </nav>
       </header>
+
+      {page === '#about' ? <About /> : <>
 
       <section className="stack" aria-label="Stack status">
         {TIERS.map((t, i) => (
@@ -105,6 +133,7 @@ export default function App() {
           {!missions.length && <li className="empty">No missions yet. Launch one above.</li>}
         </ul>
       </section>
+      </>}
     </main>
   );
 }
